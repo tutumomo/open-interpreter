@@ -1,0 +1,258 @@
+Python usage
+To start an interactive chat in Python, run the following:
+from interpreter import interpreter
+interpreter.chat()
+
+You can also pass messages to interpreter programatically:
+interpreter.chat("Get the last 5 BBC news headlines.")
+interpreter.chat("Add subtitles to all videos in /videos.")
+# ... Displays output in your terminal, completes task ...
+interpreter.chat("These look great but can you make the subtitles bigger?")
+# ...
+
+In Python, Open Interpreter remembers conversation history. If you want to start fresh, you can reset it:
+interpreter.messages = []
+
+Save and Restore Chats
+In your terminal, Open Interpreter will save previous conversations to <your application directory>/Open Interpreter/conversations/.
+You can resume any of them by running --conversations. Use your arrow keys to select one , then press ENTER to resume it.
+interpreter --conversations
+
+In Python, interpreter.chat() returns a List of messages, which can be used to resume a conversation with interpreter.messages = messages:
+# Save messages to 'messages'
+messages = interpreter.chat("My name is Killian.")
+
+# Reset interpreter ("Killian" will be forgotten)
+interpreter.messages = []
+
+# Resume chat from 'messages' ("Killian" will be remembered)
+interpreter.messages = messages
+
+===========================================
+Configure Default Settings
+We save default settings to a configuration file which can be edited by running the following command:
+interpreter --config
+====Customize System Message
+In your terminal, modify the system message by editing your configuration file as described here.
+In Python, you can inspect and configure Open Interpreter’s system message to extend its functionality, modify permissions, or give it more context.
+interpreter.system_message += """
+Run shell commands with -y so the user doesn't have to confirm them.
+"""
+print(interpreter.system_message)
+
+====Change your Language Model
+Open Interpreter uses LiteLLM to connect to language models.
+You can change the model by setting the model parameter:
+interpreter --model gpt-3.5-turbo
+interpreter --model claude-2
+interpreter --model command-nightly
+
+In Python, set the model on the object:
+interpreter.llm.model = "gpt-3.5-turbo"
+
+====Running Locally
+How to use Open Interpreter locally
+-Ollama
+Download Ollama - https://ollama.ai/download
+ollama run dolphin-mixtral:8x7b-v2.6
+interpreter --model ollama/dolphin-mixtral:8x7b-v2.6
+
+-Jan.ai
+Download Jan - Jan.ai
+Download model from Hub
+Enable API server
+   Settings
+   Advanced
+   Enable API server
+Select Model to use
+interpreter --api_base http://localhost:1337/v1 --model mixtral-8x7b-instruct
+
+-llamafile
+Download or make a llamafile - https://github.com/Mozilla-Ocho/llamafile
+chmod +x mixtral-8x7b-instruct-v0.1.Q5_K_M.llamafile
+./mixtral-8x7b-instruct-v0.1.Q5_K_M.llamafile
+interpreter --api_base https://localhost:8080/v1
+
+=====Advanced Terminal Usage
+Magic commands can be used to control the interpreter’s behavior in interactive mode:
+
+%verbose [true/false]: Toggle verbose mode
+%reset: Reset the current session
+%undo: Remove the last message and its response
+%save_message [path]: Save messages to a JSON file
+%load_message [path]: Load messages from a JSON file
+
+====Multiple Instances
+To create multiple instances, use the base class, OpenInterpreter:
+from interpreter import OpenInterpreter
+
+agent_1 = OpenInterpreter()
+agent_1.system_message = "This is a seperate instance."
+
+agent_2 = OpenInterpreter()
+agent_2.system_message = "This is yet another instance."
+
+For fun, you could make these instances talk to eachother:
+def swap_roles(messages):
+    for message in messages:
+        if message['role'] == 'user':
+            message['role'] = 'assistant'
+        elif message['role'] == 'assistant':
+            message['role'] = 'user'
+    return messages
+
+agents = [agent_1, agent_2]
+
+# Kick off the conversation
+messages = [{"role": "user", "message": "Hello!"}]
+
+while True:
+    for agent in agents:
+        messages = agent.chat(messages)
+        messages = swap_roles(messages)
+
+====OS Mode
+OS 模式是一種高度實驗性的模式，允許 Open Interpreter 通過滑鼠和鍵盤直觀地控制作業系統。它提供了LLM像 GPT-4V 這樣的多模態，並提供了必要的工具來捕獲顯示器的螢幕截圖並與文本和圖示等螢幕元素進行交互。它會嘗試使用最直接的方法來達到目標，比如在 Mac 上使用 spotlight 打開應用程式，使用 URL 中的查詢參數打開帶有附加資訊的網站。
+
+操作系統模式正在進行中，如果您有任何建議或遇到問題，請聯繫我們的 Discord。
+
+若要啟用 OS 模式，請運行帶有 --os 以下標誌的解釋器：
+interpreter --os
+
+請注意，必須為您的終端應用程式啟用螢幕錄製許可權，操作系統模式才能正常工作。
+
+OS 模式目前不支援多個顯示器。
+
+======================================================================================
+All Settings
+-語言模型
+Model Selection
+指定要使用的語言模型。有關可用型號的清單，請查看型號部分。Open Interpreter 在後台使用 LiteLLM 來支持超過 100+ 個模型。
+interpreter --model "gpt-3.5-turbo"
+-溫度
+設置模型輸出的隨機性級別。默認溫度為 0，您可以將其設置為 0 到 1 之間的任何值。溫度越高，輸出的隨機性和創造性就越強。
+interpreter --temperature 0.7
+-上下文視窗
+手動設置模型的上下文視窗大小（以標記為單位）。對於本地模型，使用較小的上下文視窗將使用較少的 RAM，這更適合大多數設備。
+interpreter --context_window 16000
+-Max Tokens
+設置模型可以在單個回應中生成的最大令牌數。
+interpreter --max_tokens 100
+-Max Output
+設置代碼輸出的最大字元數。
+interpreter --max_output 1000
+-API Base
+如果您使用的是自定義 API，請使用此參數指定其基本 URL。
+interpreter --api_base "https://api.example.com"
+-API Key
+在進行 API 呼叫時設定用於身份驗證的 API 金鑰。對於 OpenAI 模型，您可以在此處獲取 API 金鑰。
+interpreter --api_key "your_api_key_here"
+-API Version
+（可選）設置要與所選模型一起使用的 API 版本。（這將覆蓋環境變數）
+interpreter --api_version 2.0.2
+-LLM Supports Functions
+通知 Open Interpreter 你正在使用的語言模型支援函數調用。
+interpreter --llm_supports_functions
+-LLM Does Not Support Functions
+通知 Open Interpreter 你正在使用的語言模型不支援函數調用。
+interpreter --no-llm_supports_functions
+-LLM Supports Vision
+告知 Open Interpreter 你正在使用的語言模型支持視覺。預設為 False 。
+interpreter --llm_supports_vision
+
+====Interpreter
+-Vision Mode
+開啟視覺模式，該模式會向提示添加特殊指令並切換到 gpt-4-vision-preview 。
+interpreter --vision
+-OS Mode
+為多模態模型啟用操作系統模式。目前在 Python 中不可用。在此處查看有關作業系統模式的更多資訊。
+interpreter --os
+-Version
+獲取當前安裝的 Open Interpreter 版本號。
+interpreter --version
+-打開設定檔目錄
+打開設定檔目錄。可以將新的 yaml 設定檔添加到此目錄。
+interpreter --profiles
+-選擇設定檔
+選擇要使用的配置檔。如果未指定配置檔，則將使用預設配置檔。
+interpreter --profile local.yaml
+-説明
+顯示所有可用的終端參數。
+interpreter --help
+-Force Task Completion
+在迴圈中運行 Open Interpreter，要求它承認完成或失敗每個任務。
+Runs Open Interpreter in a loop, requiring it to admit to completing or failing every task.
+interpreter --force_task_completion
+-Verbose
+在詳細模式下運行解釋器。調試資訊將在每個步驟中列印，以幫助診斷問題。
+Run the interpreter in verbose mode. Debug information will be printed at each step to help diagnose issues.
+interpreter --verbose
+-Safe Mode
+Enable or disable experimental safety mechanisms like code scanning. Valid options are off, ask, and auto.
+interpreter --safe_mode ask
+-Auto Run
+Automatically run the interpreter without requiring user confirmation.
+interpreter --auto_run
+-Max Budget
+設置會話的最大預算限額（以美元為單位）。
+interpreter --max_budget 0.01
+-Local Mode
+Run the model locally. Check the models page(https://docs.openinterpreter.com/language-models/local-models/lm-studio) for more information.
+interpreter --local
+-Fast Mode
+將模型設置為 gpt-3.5-turbo，並鼓勵它只編寫代碼而不進行確認。
+interpreter --fast
+-Custom Instructions
+將自定義指令追加到系統消息中。這對於添加有關您的系統、首選語言等的資訊非常有用。
+interpreter --custom_instructions "This is a custom instruction."
+-System Message
+我們不建議修改系統消息，因為這樣做會退出退出將來對核心系統消息的更新。請改用 --custom_instructions ，將相關信息添加到系統消息中。如果必須修改系統消息，可以使用此參數或更改配置檔來執行此操作。
+interpreter --system_message "You are Open Interpreter..."
+-Disable Telemetry
+Opt out of telemetry.
+interpreter --disable_telemetry
+-Offline
+此布爾標誌確定是啟用還是禁用某些離線功能，如打開過程。將其與 model 參數結合使用以設置語言模型。
+interpreter.offline = True
+-Messages
+此屬性保存使用者和解釋器之間的清單 messages 。
+您可以使用它來恢復對話：
+interpreter.chat("Hi! Can you print hello world?")
+
+print(interpreter.messages)
+
+# This would output:
+
+# [
+#    {
+#       "role": "user",
+#       "message": "Hi! Can you print hello world?"
+#    },
+#    {
+#       "role": "assistant",
+#       "message": "Sure!"
+#    }
+#    {
+#       "role": "assistant",
+#       "language": "python",
+#       "code": "print('Hello, World!')",
+#       "output": "Hello, World!"
+#    }
+# ]
+
+#You can use this to restore `interpreter` to a previous conversation.
+interpreter.messages = messages # A list that resembles the one above
+
+====Computer
+其中 interpreter.computer 的 computer 物件是 AI 控制的虛擬電腦。它的主要介面/功能是執行代碼並即時返回輸出。
+-Offline
+在離線模式下運行將 computer 禁用某些連線功能，例如託管的電腦 API。繼承自 interpreter.offline 。
+interpreter.computer.offline = True
+-Verbose
+這主要用於調試 interpreter.computer 。繼承自 interpreter.verbose 。
+interpreter.computer.verbose = True
+-Emit Images 發出圖像
+emit_images 中的 interpreter.computer 屬性控制計算機是否應發出圖像。這是繼承自 interpreter.llm.supports_vision 。
+這用於多模型與純文本模型。如果 emit_images 為 True，則運行 computer.display.view() 將返回多模態模型的實際螢幕截圖。如果為 False， computer.display.view() 將返回螢幕上的所有文字。
+計算機的許多其他功能可以產生圖像/文本輸出，此參數對此進行控制。
+interpreter.computer.emit_images = True

@@ -1,0 +1,17 @@
+LM Studio
+https://docs.openinterpreter.com/language-models/local-models/lm-studio
+interpreter --local
+
+Ollama
+https://docs.openinterpreter.com/language-models/local-models/ollama
+https://ollama.ai/library
+interpreter --model ollama/<model-name>
+
+LlamaFile
+https://docs.openinterpreter.com/language-models/local-models/llamafile
+
+Jan.ai
+https://docs.openinterpreter.com/language-models/local-models/janai
+
+
+

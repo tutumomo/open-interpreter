@@ -1,0 +1,60 @@
+https://docs.openinterpreter.com/language-models/introduction
+
+Hosted Providers
+OpenAI
+interpreter --model gpt-4
+interpreter --model gpt-4-32k
+interpreter --model gpt-3.5-turbo
+interpreter --model gpt-3.5-turbo-16k
+
+======================================================
+Google (Vertex AI)
+pip install google-cloud-aiplatform
+interpreter --model gemini-pro
+interpreter --model gemini-pro-vision
+
+======================================================
+Cohere：需設置環境變數 COHERE_API_KEY
+interpreter --model command-nightly
+
+interpreter --model command
+interpreter --model command-light
+interpreter --model command-medium
+interpreter --model command-medium-beta
+interpreter --model command-xlarge-beta
+interpreter --model command-nightly
+
+======================================================
+Replicate：需設置環境變數 REPLICATE_API_KEY
+interpreter --model replicate/llama-2-70b-chat:2796ee9483c3fd7aa2e171d38f4ca12251a30609463dcfd4cd76703f22e96cdf
+
+interpreter --model replicate/llama-2-70b-chat:2796ee9483c3fd7aa2e171d38f4ca12251a30609463dcfd4cd76703f22e96cdf
+interpreter --model replicate/a16z-infra/llama-2-13b-chat:2a7f981751ec7fdf87b5b91ad4db53683a98082e9ff7bfd12c8cd5ea85980a52
+interpreter --model replicate/vicuna-13b:6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b
+interpreter --model replicate/daanelson/flan-t5-large:ce962b3f6792a57074a601d3979db5839697add2e4e02696b3ced4c022d4767f
+
+======================================================
+Huggingface：需設置環境變數 HUGGINGFACE_API_KEY
+To use Open Interpreter with Huggingface models, set the model flag:
+interpreter --model huggingface/<huggingface-model>
+You may also need to specify your Huggingface api base url:
+interpreter --api_base <https://my-endpoint.huggingface.cloud>
+
+======================================================
+Perplexity：需設置環境變數 PERPLEXITYAI_API_KEY
+interpreter --model perplexity/<perplexity-model>
+
+
+interpreter --model perplexity/pplx-7b-chat
+interpreter --model perplexity/pplx-70b-chat
+interpreter --model perplexity/pplx-7b-online
+interpreter --model perplexity/pplx-70b-online
+interpreter --model perplexity/codellama-34b-instruct
+interpreter --model perplexity/llama-2-13b-chat
+interpreter --model perplexity/llama-2-70b-chat
+interpreter --model perplexity/mistral-7b-instruct
+interpreter --model perplexity/openhermes-2-mistral-7b
+interpreter --model perplexity/openhermes-2.5-mistral-7b
+interpreter --model perplexity/pplx-7b-chat-alpha
+interpreter --model perplexity/pplx-70b-chat-alpha
+
